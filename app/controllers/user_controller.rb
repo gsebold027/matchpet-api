@@ -1,4 +1,25 @@
 class UserController < ApplicationController
+  before_action :authorize_request, except: :create
+  before_action :find_user, except: %i[create index]
+
+  # GET /users
+  def index
+    @users = User.all
+    render json: @users, status: :ok
+  end
+
+  # GET /users/{username}
+  def show
+    user = {}
+    user[:id] = @user.id
+    user[:name] = @user.name
+    user[:email] = @user.email
+    user[:phone] = @user.phone
+    user[:location] = { lat: @user.location.lat, lng: @user.location.lng }
+    render json: user, status: :ok
+  end
+
+  # POST /users
   def create
     location = Location.new(location_params)
     bd_location = Location.find_by(lat: location.lat, lng: location.lng)
@@ -20,29 +41,12 @@ class UserController < ApplicationController
       errors = @user.errors.map { |error| { "#{error.attribute}" => error.full_message } }
 
       @response = { message: errors }
-      render json: @response, status: :bad_request
+      render json: @response, status: :unprocessable_entity
     end
   end
 
+  # PUT /users/{username}
   def update
-    @id = params[:id]
-
-    if @id.nil? || @id.empty? || @id.is_a?(Numeric)
-      @response = { message: 'User id must be provided' }
-      render json: @response, status: :unprocessable_entity
-      return
-    end
-
-    bd_user = User.find_by(id: @id)
-
-    if bd_user.nil?
-      @response = { message: 'Unvalid user id' }
-      render json: @response, status: :unprocessable_entity
-      return
-    end
-
-    @user = User.new(user_params)
-
     location = Location.new(location_params)
     bd_location = Location.find_by(lat: location.lat, lng: location.lng)
 
@@ -54,40 +58,31 @@ class UserController < ApplicationController
 
     @user.location = location
 
-    if @user.save
+    if @user.update(user_params)
       @response = { message: 'User updated successfully' }
       render json: @response, status: :ok
     else
       errors = @user.errors.map { |error| { "#{error.attribute}" => error.full_message } }
 
       @response = { message: errors }
-      render json: @response, status: :bad_request
+      render json: @response, status: :unprocessable_entity
     end
   end
 
+  # DELETE /users/{username}
   def delete
-    @id = params[:id]
-
-    if @id.nil? || @id.empty? || @id.is_a?(Numeric)
-      @response = { message: 'User id must be provided' }
-      render json: @response, status: :unprocessable_entity
-      return
-    end
-
-    user = User.find_by(id: @id)
-
-    if user.nil?
-      @response = { message: 'Unvalid user id' }
-      render json: @response, status: :unprocessable_entity
-      return
-    end
-
-    user.delete
+    @user.destroy
     @response = { message: 'User deleted successfully' }
     render json: @response, status: :ok
   end
 
   private
+
+  def find_user
+    @user = User.find(params[:_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { errors: 'User not found' }, status: :not_found
+  end
 
   def location_params
     params.require(:location).permit(:lat, :lng, :address)

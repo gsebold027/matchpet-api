@@ -2,14 +2,14 @@
 
 one:
   name: MyString
-  phone: MyString
-  email: MyString
-  password: MyString
+  phone: (41) 99999-9999
+  email: teste@test.com"
+  password_digest: <%= BCrypt::Password.create('teste') %>
   location: one
 
-two:
-  name: MyString
-  phone: MyString
-  email: MyString
-  password: MyString
-  location: two
+# two:
+#   name: MyString
+#   phone: MyString
+#   email: MyString
+#   password: MyString
+#   location: two
