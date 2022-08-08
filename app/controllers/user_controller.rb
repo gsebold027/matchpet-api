@@ -2,13 +2,13 @@ class UserController < ApplicationController
   before_action :authorize_request, except: :create
   before_action :find_user, except: %i[create index]
 
-  # GET /users
+  # GET /user
   def index
     @users = User.all
     render json: @users, status: :ok
   end
 
-  # GET /users/{username}
+  # GET /user/{id}
   def show
     user = {}
     user[:id] = @user.id
@@ -19,7 +19,7 @@ class UserController < ApplicationController
     render json: user, status: :ok
   end
 
-  # POST /users
+  # POST /user
   def create
     location = Location.new(location_params)
     bd_location = Location.find_by(lat: location.lat, lng: location.lng)
@@ -45,7 +45,7 @@ class UserController < ApplicationController
     end
   end
 
-  # PUT /users/{username}
+  # PUT /user/{id}
   def update
     location = Location.new(location_params)
     bd_location = Location.find_by(lat: location.lat, lng: location.lng)
@@ -69,8 +69,8 @@ class UserController < ApplicationController
     end
   end
 
-  # DELETE /users/{username}
-  def delete
+  # DELETE /user/{id}
+  def destroy
     @user.destroy
     @response = { message: 'User deleted successfully' }
     render json: @response, status: :ok
