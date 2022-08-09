@@ -47,6 +47,7 @@ class UserController < ApplicationController
 
   # PUT /user/{id}
   def update
+    render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @user.id
     location = Location.new(location_params)
     bd_location = Location.find_by(lat: location.lat, lng: location.lng)
 
@@ -71,6 +72,7 @@ class UserController < ApplicationController
 
   # DELETE /user/{id}
   def destroy
+    render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @user.id
     @user.destroy
     @response = { message: 'User deleted successfully' }
     render json: @response, status: :ok
