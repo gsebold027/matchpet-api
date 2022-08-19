@@ -47,7 +47,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     user_params = %w[id name email phone location lat lng]
     user_values = ["#{users(:one).id}", "#{users(:one).name}", "#{users(:one).email}", "#{users(:one).phone}",
-                   "#{users(:one).location}", "#{users(:one).location.lat}", "#{users(:one).location.lng}"]
+                   "#{users(:one).location.lat}", "#{users(:one).location.lng}"]
 
     assert_response :ok
 
@@ -56,22 +56,45 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'Successful update a user' do
+    login_res = login
+    token = login_res['token']
+    id = login_res['id']
+
     user = {
-      name: 'Teste',
-      phone: '(41) 99999-9999',
-      email: 'gustavo@gmail.com',
+      name: 'TestUpdate',
+      phone: '(41) 92345-6789',
+      email: users(:one).email,
       password: 'teste',
       password_confirmation: 'teste'
     }
     location = {
-      lat: 1.0,
-      lng: 1.0,
-      address: 'teste'
+      lat: users(:one).location.lat,
+      lng: users(:one).location.lng,
+      address: users(:one).location.address
     }
-    post '/user', params: { user:, location: }
+    put "/user/#{id}", headers: { 'Authorization' => token }, params: { user:, location: }
 
-    expected_response = 'User created successfully'
-    assert_response :created
+    expected_response = 'User updated successfully'
+    assert_response :ok
     assert_includes response.body, expected_response
+    assert_equal user[:name], User.find(users(:one).id).name
+    assert_equal user[:phone], User.find(users(:one).id).phone
   end
+
+  test 'Successful delete a user' do
+    login_res = login
+    token = login_res['token']
+    id = login_res['id']
+    
+    delete "/user/#{id}", headers: { 'Authorization' => token }
+
+    expected_response = 'User deleted successfully'
+    assert_response :ok
+    assert_includes response.body, expected_response
+    assert_nil User.find_by_id(users(:one).id)
+  end
+
+  # TODO Successful get all users
+
+
 end

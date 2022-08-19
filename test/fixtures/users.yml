@@ -3,7 +3,7 @@
 one:
   name: MyString
   phone: (41) 99999-9999
-  email: teste@test.com"
+  email: teste@test.com
   password_digest: <%= BCrypt::Password.create('teste') %>
   location: one
 
