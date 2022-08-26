@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  phone: (41) 99999-9999
+  email: teste@test.com
+  password_digest: <%= BCrypt::Password.create('teste') %>
+  location: one
+
+# two:
+#   name: MyString
+#   phone: MyString
+#   email: MyString
+#   password: MyString
+#   location: two
