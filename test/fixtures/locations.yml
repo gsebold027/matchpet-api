@@ -3,9 +3,9 @@
 one:
   lat: 1.5
   lng: 1.5
-  address: MyString
+  address: Teste
 
-two:
-  lat: 1.5
-  lng: 1.5
-  address: MyString
+# two:
+#   lat: 1.5
+#   lng: 1.5
+#   address: MyString
