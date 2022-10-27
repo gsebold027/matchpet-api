@@ -10,13 +10,7 @@ class PetController < ApplicationController
   
     # GET /user/{id}
     def show
-    #   user = {}
-    #   user[:id] = @user.id
-    #   user[:name] = @user.name
-    #   user[:email] = @user.email
-    #   user[:phone] = @user.phone
-    #   user[:location] = { lat: @user.location.lat, lng: @user.location.lng }
-    #   render json: user, status: :ok
+      render json: @pet.to_json, status: :ok
     end
   
     # POST /pet
@@ -37,7 +31,7 @@ class PetController < ApplicationController
         @pet.user = @current_user
     
         if @pet.save
-            @response = { message: 'Pet created successfully' }
+            @response = { message: 'Pet created successfully', id: @pet.id }
             render json: @response, status: :created
         else
             errors = @pet.errors.map { |error| { "#{error.attribute}" => error.full_message } }
@@ -82,11 +76,11 @@ class PetController < ApplicationController
   
     private
   
-    # def find_user
-    #   @user = User.find(params[:_id])
-    # rescue ActiveRecord::RecordNotFound
-    #   render json: { errors: 'User not found' }, status: :not_found
-    # end
+    def find_pet
+      @pet = Pet.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: 'Pet not found' }, status: :not_found
+    end
   
     def location_params
       params.permit(:lat, :lng, :address)
