@@ -18,7 +18,7 @@ amazon_prod:
   service: S3
   access_key_id: <%= ENV['AWS_ACCESS_KEY_ID'] %>
   secret_access_key: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-  region: <%= Rails.application.credentials.aws[:region] %>
+  region: <%= ENV['AWS_REGION'] %>
   bucket: matchpet
 
 # Remember not to checkin your GCS keyfile to a repository
