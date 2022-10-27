@@ -11,6 +11,8 @@
 class User < ApplicationRecord
   belongs_to :location
 
+  has_many :pets
+
   has_secure_password
   validates_presence_of :name, message: 'must be provided'
   validates_presence_of :phone, message: 'must be provided'
