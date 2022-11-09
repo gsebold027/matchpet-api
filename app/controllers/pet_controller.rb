@@ -4,8 +4,8 @@ class PetController < ApplicationController
   
     # GET /user
     def index
-    #   @users = User.all
-    #   render json: @users, status: :ok
+       @pets = Pet.all
+       render json: @pets, status: :ok
     end
   
     # GET /user/{id}
