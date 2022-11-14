@@ -55,22 +55,22 @@ class PetController < ApplicationController
   
     # GET /user/{id}
     def show
-        full_pet << {
-          id: pet.id,
-          name: pet.name,
-          species: pet.species,
-          gender: pet.gender,
-          size: pet.size,
-          status: pet.status,
-          breed: pet.breed,
-          age: pet.age,
-          weight: pet.weight,
-          description: pet.description,
-          neutered: pet.neutered,
-          special_need: pet.special_need,
-          location: pet.location,
-          owner: pet.user,
-          photo_url: pet.photo.url
+        full_pet = {
+          id: @pet.id,
+          name: @pet.name,
+          species: @pet.species,
+          gender: @pet.gender,
+          size: @pet.size,
+          status: @pet.status,
+          breed: @pet.breed,
+          age: @pet.age,
+          weight: @pet.weight,
+          description: @pet.description,
+          neutered: @pet.neutered,
+          special_need: @pet.special_need,
+          location: @pet.location,
+          owner: @pet.user,
+          photo_url: @pet.photo.url
         }
       render json: full_pet.to_json, status: :ok
     end
