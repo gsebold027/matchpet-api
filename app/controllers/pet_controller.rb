@@ -47,7 +47,7 @@ class PetController < ApplicationController
             special_need: pet.special_need,
             location: pet.location,
             owner: pet.user,
-            photo_url: pet.photo.url
+            photoUrl: pet.photo.url
           }
         end
         render json: @pets, status: :ok
@@ -70,7 +70,7 @@ class PetController < ApplicationController
           special_need: @pet.special_need,
           location: @pet.location,
           owner: @pet.user,
-          photo_url: @pet.photo.url
+          photoUrl: @pet.photo.url
         }
       render json: full_pet.to_json, status: :ok
     end
@@ -87,7 +87,7 @@ class PetController < ApplicationController
             location = bd_location
         end
     
-        @pet = Pet.new(name: params[:name], species: params[:species].to_i, gender: params[:gender].to_i, size: params[:size].to_i, status: params[:status].to_i, breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i)
+        @pet = Pet.new(name: params[:name], species: params[:species].to_i, gender: params[:gender].to_i, size: params[:size].to_i, status: params[:status].to_i, breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
     
         @pet.location = location
         @pet.user = @current_user
