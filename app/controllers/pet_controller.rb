@@ -4,8 +4,53 @@ class PetController < ApplicationController
   
     # GET /user
     def index
-       @pets = Pet.all
-       render json: @pets, status: :ok
+        pets_raw = Pet.all
+
+        unless(params[:species].nil? || params[:species].empty?)
+          pets_raw = pets_raw.where(species: params[:species])
+        end
+
+        unless(params[:gender].nil? || params[:gender].empty?)
+          pets_raw = pets_raw.where(gender: params[:gender])
+        end
+
+        unless(params[:minAge].nil?)
+          pets_raw = pets_raw.where(age: params[:minAge]..)
+        end
+
+        unless(params[:maxAge].nil?)
+          pets_raw = pets_raw.where(age: ..params[:maxAge])
+        end
+
+        unless(params[:size].nil? || params[:size].empty?)
+          pets_raw = pets_raw.where(size: params[:size])
+        end
+
+        unless(params[:special_need].nil?)
+          pets_raw = pets_raw.where(special_need: params[:special_need])
+        end
+
+        @pets = []
+        pets_raw.each do |pet|
+          @pets << {
+            id: pet.id,
+            name: pet.name,
+            species: pet.species,
+            gender: pet.gender,
+            size: pet.size,
+            status: pet.status,
+            breed: pet.breed,
+            age: pet.age,
+            weight: pet.weight,
+            description: pet.description,
+            neutered: pet.neutered,
+            special_need: pet.special_need,
+            location: pet.location,
+            owner: pet.user,
+            photo_url: pet.photo.url
+          }
+        end
+        render json: @pets, status: :ok
     end
   
     # GET /user/{id}
