@@ -94,7 +94,20 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_nil User.find_by_id(users(:one).id)
   end
 
-  # TODO Successful get all users
+  test 'Successful get all users' do
+    login_res = login
+    token = login_res['token']
+    id = login_res['id']
+    get "/user", headers: { 'Authorization' => token }
 
+    user_params = %w[id name email phone location_id]
+    user_values = ["#{users(:one).id}", "#{users(:one).name}", "#{users(:one).email}", "#{users(:one).phone}",
+                   "#{users(:one).location_id}"]
+
+    assert_response :ok
+
+    user_params.each { |param| assert_includes response.body, param }
+    user_values.each { |value| assert_includes response.body, value }
+  end
 
 end

@@ -2,7 +2,7 @@ class PetController < ApplicationController
     before_action :authorize_request
     before_action :find_pet, except: %i[create index]
   
-    # GET /user
+    # GET /pet
     def index
         pets_raw = Pet.all
 
@@ -53,7 +53,7 @@ class PetController < ApplicationController
         render json: @pets, status: :ok
     end
   
-    # GET /user/{id}
+    # GET /pet/{id}
     def show
         full_pet = {
           id: @pet.id,

@@ -1,7 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-
-two:
-  name: MyString
+  name: MyPet
+  species: 1,
+  gender: 1,
+  size: 1,
+  status: 2,
+  breed: "vira lata",
+  age: 3,
+  weight: 4.3,
+  description: "teste descrição",
+  neutered: 1,
+  special_need: 0,
+  location: one
+  owner: one
