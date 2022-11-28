@@ -77,7 +77,6 @@ class PetController < ApplicationController
   
     # POST /pet
     def create
-        params
         location = Location.new(lat: params[:lat].to_f, lng: params[:lng].to_f, address: params[:address])
         bd_location = Location.find_by(lat: location.lat, lng: location.lng)
   
@@ -105,35 +104,35 @@ class PetController < ApplicationController
   
     # PUT /user/{id}
     def update
-    #   render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @user.id
-    #   location = Location.new(location_params)
-    #   bd_location = Location.find_by(lat: location.lat, lng: location.lng)
+      render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @pet.user.id
+      location = Location.new(lat: params[:lat].to_f, lng: params[:lng].to_f, address: params[:address])
+      bd_location = Location.find_by(lat: location.lat, lng: location.lng)
+
+      if bd_location.nil?
+          location.save
+      else
+          location = bd_location
+      end
+
+      @pet.location = location
   
-    #   if bd_location.nil?
-    #     location.save
-    #   else
-    #     location = bd_location
-    #   end
+      if @pet.update(name: params[:name], species: params[:species].to_i, gender: params[:gender].to_i, size: params[:size].to_i, status: params[:status].to_i, breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
+          @response = { message: 'Pet updated successfully', id: @pet.id }
+          render json: @response, status: :created
+      else
+          errors = @pet.errors.map { |error| { "#{error.attribute}" => error.full_message } }
   
-    #   @user.location = location
-  
-    #   if @user.update(user_params)
-    #     @response = { message: 'User updated successfully' }
-    #     render json: @response, status: :ok
-    #   else
-    #     errors = @user.errors.map { |error| { "#{error.attribute}" => error.full_message } }
-  
-    #     @response = { message: errors }
-    #     render json: @response, status: :unprocessable_entity
-    #   end
+          @response = { message: errors }
+          render json: @response, status: :unprocessable_entity
+      end
     end
   
     # DELETE /user/{id}
     def destroy
-    #   render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @user.id
-    #   @user.destroy
-    #   @response = { message: 'User deleted successfully' }
-    #   render json: @response, status: :ok
+      render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id ==  @pet.user.id
+      @pet.destroy
+      @response = { message: 'Pet deleted successfully' }
+      render json: @response, status: :ok
     end
   
     private
