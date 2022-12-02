@@ -15,7 +15,7 @@ class UserController < ApplicationController
     user[:name] = @user.name
     user[:email] = @user.email
     user[:phone] = @user.phone
-    user[:location] = { lat: @user.location.lat, lng: @user.location.lng }
+    user[:location] = { lat: @user.location.lat, lng: @user.location.lng, address: @user.location.address }
     render json: user, status: :ok
   end
 
