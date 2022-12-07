@@ -1,4 +1,6 @@
 class FilterController < ApplicationController
+    before_action :authorize_request
+
     def gender
         @genders = Gender.all
 
