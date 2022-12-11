@@ -59,7 +59,7 @@ class PetController < ApplicationController
             location = bd_location
         end
     
-        @pet = Pet.new(name: params[:name], specie_id: params[:species].to_i, gender_id: params[:gender].to_i, size_id: params[:size].to_i, status_id: params[:status].to_i, breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
+        @pet = Pet.new(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
     
         @pet.location = location
         @pet.user = @current_user
@@ -89,7 +89,7 @@ class PetController < ApplicationController
 
       @pet.location = location
   
-      if @pet.update(name: params[:name], specie_id: params[:species].to_i, gender_id: params[:gender].to_i, size_id: params[:size].to_i, status_id: params[:status].to_i, breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
+      if @pet.update(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
           @response = { message: 'Pet updated successfully', id: @pet.id }
           render json: @response, status: :created
       else
