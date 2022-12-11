@@ -7,15 +7,15 @@ class PetController < ApplicationController
         pets_raw = Pet.all
 
         unless(params[:status].blank?)
-          pets_raw = pets_raw.where(status: Status.where(id: params[:gender]))
+          pets_raw = pets_raw.where(status: Status.where(normalized_name: params[:gender]))
         end
 
         unless(params[:species].blank?)
-          pets_raw = pets_raw.where(specie: Specie.where(id: params[:species]))
+          pets_raw = pets_raw.where(specie: Specie.where(normalized_name: params[:species]))
         end
 
         unless(params[:gender].blank?)
-          pets_raw = pets_raw.where(gender: Gender.where(id: params[:gender]))
+          pets_raw = pets_raw.where(gender: Gender.where(normalized_name: params[:gender]))
         end
 
         unless(params[:minAge].blank?)
@@ -27,7 +27,7 @@ class PetController < ApplicationController
         end
 
         unless(params[:size].blank?)
-          pets_raw = pets_raw.where(size: params[:size])
+          pets_raw = pets_raw.where(size: Size.where(normalized_name: params[:size]))
         end
 
         unless(params[:special_need].blank?)
