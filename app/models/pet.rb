@@ -22,10 +22,15 @@ class Pet < ApplicationRecord
 
   has_one_attached :photo
 
-  validates_presence_of :specie_id
-  validates_presence_of :gender_id
-  validates_presence_of :status_id
-
+  validates_presence_of :name
+  validates_presence_of :age
+  validates_presence_of :weight
+  validates_presence_of :description
+  
+  validates_presence_of :specie
+  validates_presence_of :gender
+  validates_presence_of :status
   validates_presence_of :location
-
+  validates_presence_of :user
+  validates_presence_of :photo
 end

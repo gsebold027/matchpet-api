@@ -9,6 +9,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: matchpet
   timeout: 5000
+  port: 5433
 
 development:
   <<: *default
@@ -21,6 +22,8 @@ test:
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: matchpet_test
   timeout: 5000
+  port: 5433
+
 
 
 production:
