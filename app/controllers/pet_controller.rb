@@ -50,16 +50,21 @@ class PetController < ApplicationController
   
     # POST /pet
     def create
-        location = Location.new(lat: params[:lat].to_f, lng: params[:lng].to_f, address: params[:address])
+        location = Location.new(lat: (params[:lat].blank? ? nil : params[:lat].to_f), lng: (params[:lng].blank? ? nil : params[:lng].to_f), address: params[:address])
         bd_location = Location.find_by(lat: location.lat, lng: location.lng)
   
         if bd_location.nil?
-            location.save
+            unless location.save
+                errors = location.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+                @response = { message: errors }
+                render json: @response, status: :unprocessable_entity
+                return
+            end
         else
             location = bd_location
         end
     
-        @pet = Pet.new(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo], user: @current_user, location: location)
+        @pet = Pet.new(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: (params[:age].blank? ? nil : params[:age].to_i), weight: (params[:weight].blank? ? nil : params[:weight].to_f), description: params[:description], neutered: (params[:neutered].blank? ? nil : params[:neutered].to_i), special_need: (params[:special_need].blank? ? nil : params[:special_need].to_i), photo: params[:photo], user: @current_user, location: location)
     
     
         if @pet.save
@@ -73,21 +78,24 @@ class PetController < ApplicationController
         end
     end
   
-    # PUT /user/{id}
+    # PUT /pet/{id}
     def update
       render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @pet.user.id
-      location = Location.new(lat: params[:lat].to_f, lng: params[:lng].to_f, address: params[:address])
+      location = Location.new(lat: (params[:lat].blank? ? nil : params[:lat].to_f), lng: (params[:lng].blank? ? nil : params[:lng].to_f), address: params[:address])
       bd_location = Location.find_by(lat: location.lat, lng: location.lng)
-
+  
       if bd_location.nil?
-          location.save
+          unless location.save
+              errors = location.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+              @response = { message: errors }
+              render json: @response, status: :unprocessable_entity
+              return
+          end
       else
           location = bd_location
       end
-
-      @pet.location = location
   
-      if @pet.update(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: params[:age].to_i, weight: params[:weight].to_f, description: params[:description], neutered: params[:neutered].to_i, special_need: params[:special_need].to_i, photo: params[:photo])
+      if @pet.update(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]), gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: (params[:age].blank? ? nil : params[:age].to_i), weight: (params[:weight].blank? ? nil : params[:weight].to_f), description: params[:description], neutered: (params[:neutered].blank? ? nil : params[:neutered].to_i), special_need: (params[:special_need].blank? ? nil : params[:special_need].to_i), photo: params[:photo], location: location)
           @response = { message: 'Pet updated successfully', id: @pet.id }
           render json: @response, status: :created
       else
