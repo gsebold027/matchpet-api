@@ -1,0 +1,11 @@
+Style/CollectionMethods:
+  Enabled: true
+  PreferredMethods:
+    # No preference for collect, keep all others from default config.
+    collect: ~
+
+Layout/IndentationWidth:
+  Width: 4
+
+Metrics/BlockLength:
+  ExcludedMethods: ['describe', 'context', 'feature', 'scenario', 'let', 'it']
