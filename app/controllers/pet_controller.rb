@@ -24,6 +24,7 @@ class PetController < ApplicationController
 
         pets_raw = Pet.all
         filtering_params(params).each do |key, value|
+            value = value.split(',') if %w[species gender size].include?(key)
             pets_raw = pets_raw.public_send("filter_by_#{key}", value) if value.present?
         end
 
@@ -75,23 +76,42 @@ class PetController < ApplicationController
     # PUT /pet/{id}
     def update
         render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @pet.user.id
-        location = Location.new(lat: (params[:lat].blank? ? nil : params[:lat].to_f),
-                                lng: (params[:lng].blank? ? nil : params[:lng].to_f), address: params[:address])
-        bd_location = Location.find_by(lat: location.lat, lng: location.lng)
+        to_update_information = {}
 
-        if bd_location.nil?
-            unless location.save
-                errors = location.errors.map { |error| { "#{error.attribute}" => error.full_message } }
-                @response = { message: errors }
-                render json: @response, status: :unprocessable_entity
-                return
+        if !params[:lat].nil? && !params[:lng].nil?
+            location = Location.new(lat: (params[:lat].blank? ? nil : params[:lat].to_f),
+                                    lng: (params[:lng].blank? ? nil : params[:lng].to_f), address: params[:address])
+            bd_location = Location.find_by(lat: location.lat, lng: location.lng)
+
+            if bd_location.nil?
+                unless location.save
+                    errors = location.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+                    @response = { message: errors }
+                    render json: @response, status: :unprocessable_entity
+                    return
+                end
+            else
+                location = bd_location
             end
-        else
-            location = bd_location
+            to_update_information[:location] = location
         end
 
-        if @pet.update(name: params[:name], specie: Specie.find_by(normalized_name: params[:species]),
-                       gender: Gender.find_by(normalized_name: params[:gender]), size: Size.find_by(normalized_name: params[:size]), status: Status.find_by(normalized_name: params[:status]), breed: params[:breed], age: (params[:age].blank? ? nil : params[:age].to_i), weight: (params[:weight].blank? ? nil : params[:weight].to_f), description: params[:description], neutered: (params[:neutered].blank? ? nil : params[:neutered].to_i), special_need: (params[:special_need].blank? ? nil : params[:special_need].to_i), photo: params[:photo], location:)
+        params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered, :special_need, :photo).each do |key, value|
+            case key
+            when 'species'
+                to_update_information[:specie] = Specie.find_by(normalized_name: value)
+            when 'gender'
+                to_update_information[:gender] = Gender.find_by(normalized_name: value)
+            when 'size'
+                to_update_information[:size] = Size.find_by(normalized_name: value)
+            when 'status'
+                to_update_information[:status] = Status.find_by(normalized_name: value)
+            else
+                to_update_information[key.to_sym] = value
+            end
+        end
+
+        if @pet.update(to_update_information)
             @response = { message: 'Pet updated successfully', id: @pet.id }
             render json: @response, status: :created
         else
