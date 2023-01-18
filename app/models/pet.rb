@@ -33,4 +33,8 @@ class Pet < ApplicationRecord
     scope :filter_by_maxAge, ->(max_age) { where(age: ..max_age) }
     scope :filter_by_size, ->(normalized_name) { where size: Size.where(normalized_name:) }
     scope :filter_by_specialNeed, ->(special_need) { where(special_need:) }
+  
+    def self.filter_by_distance(coord, distance, pets) 
+        pets.select { |pet| pet.Geocoder::Calculations.distance_between([pet.location.lat, pet.location.lng],[coord[:lat], coord[:lng]]) < distance }
+    end 
 end

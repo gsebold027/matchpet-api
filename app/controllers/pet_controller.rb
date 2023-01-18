@@ -4,29 +4,15 @@ class PetController < ApplicationController
 
     # GET /pet
     def index
-        # pets_raw = Pet.all
-
-        # pets_raw = pets_raw.where(status: Status.where(normalized_name: params[:gender])) unless params[:status].blank?
-
-        # unless params[:species].blank?
-        #     pets_raw = pets_raw.where(specie: Specie.where(normalized_name: params[:species]))
-        # end
-
-        # pets_raw = pets_raw.where(gender: Gender.where(normalized_name: params[:gender])) unless params[:gender].blank?
-
-        # pets_raw = pets_raw.where(age: params[:minAge]..) unless params[:minAge].blank?
-
-        # pets_raw = pets_raw.where(age: ..params[:maxAge]) unless params[:maxAge].blank?
-
-        # pets_raw = pets_raw.where(size: Size.where(normalized_name: params[:size])) unless params[:size].blank?
-
-        # pets_raw = pets_raw.where(special_need: params[:special_need]) unless params[:special_need].blank?
-
         pets_raw = Pet.all
         filtering_params(params).each do |key, value|
             value = value.split(',') if %w[species gender size].include?(key)
             pets_raw = pets_raw.public_send("filter_by_#{key}", value) if value.present?
         end
+
+        if params[:lat].blank? && params[:lng].blank? && params[:distance].blank?
+            Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}), distance.to_i, pets_raw)
+        end    
 
         @pets = []
         pets_raw.each do |pet|
