@@ -11,7 +11,7 @@ class PetController < ApplicationController
         end
 
         if params[:lat].blank? && params[:lng].blank? && params[:distance].blank?
-            Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, distance.to_i, pets_raw)
+            Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, params[:distance].to_i, pets_raw)
         end    
 
         @pets = []
