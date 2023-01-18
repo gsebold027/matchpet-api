@@ -59,7 +59,7 @@ class PetController < ApplicationController
         end
     end
 
-    # PUT /pet/{id}
+    # PATCH /pet/{id}
     def update
         render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @pet.user.id
         to_update_information = {}
