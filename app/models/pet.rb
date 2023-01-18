@@ -35,6 +35,6 @@ class Pet < ApplicationRecord
     scope :filter_by_specialNeed, ->(special_need) { where(special_need:) }
   
     def self.filter_by_distance(coord, distance, pets) 
-        pets.select { |pet| pet.Geocoder::Calculations.distance_between([pet.location.lat, pet.location.lng],[coord[:lat], coord[:lng]]) < distance }
+        pets.select { |pet| Geocoder::Calculations.distance_between([pet.location.lat, pet.location.lng],[coord[:lat], coord[:lng]]) < distance }
     end 
 end
