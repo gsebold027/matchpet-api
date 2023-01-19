@@ -78,6 +78,53 @@ class UserController < ApplicationController
     render json: @response, status: :ok
   end
 
+  def favorites
+    pets = @user.favorite_pets.map { |favorite| get_pet_info(favorite.pet) }
+
+    render  json: pets, status: :ok
+  end
+
+  def add_favorite
+    pet = Pet.find_by(id: params[:pet_id])
+
+    if pet.nil?
+      render json: { error: 'Pet not found' }, status: :unprocessable_entity
+      return
+    end
+    
+    new_favorite = FavoritePet.new(user: @user, pet:)
+    if new_favorite.save
+      @response = { message: 'Pet favorited successfully' }
+      render json: @response, status: :ok
+    else
+      errors = new_favorite.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+
+      @response = { message: errors }
+      render json: @response, status: :unprocessable_entity
+    end  
+  end
+
+  def remove_favorite
+    pet = Pet.find_by(id: params[:pet_id])
+
+    favorite = FavoritePet.find_by(user: @user, pet:)
+
+    if favorite.nil?
+      render json: { error: 'Relation not found' }, status: :unprocessable_entity
+      return
+    end
+    
+    if favorite.destroy
+      @response = { message: 'Favorite pet removed successfully' }
+      render json: @response, status: :ok
+    else
+      errors = new_favorite.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+
+      @response = { message: errors }
+      render json: @response, status: :unprocessable_entity
+    end
+  end  
+  
   private
 
   def find_user
@@ -93,4 +140,33 @@ class UserController < ApplicationController
   def user_params
     params.require(:user).permit(:name, :phone, :email, :password, :password_confirmation)
   end
+
+  def get_pet_info(pet)
+    pet_info = {
+        id: pet.id,
+        name: pet.name,
+        specie: pet.specie.slice(:id, :display_name, :normalized_name),
+        gender: pet.gender.slice(:id, :display_name, :normalized_name),
+        size: pet.size.slice(:id, :display_name, :normalized_name),
+        status: pet.status.slice(:id, :display_name, :normalized_name),
+        breed: pet.breed,
+        age: pet.age,
+        weight: pet.weight,
+        description: pet.description,
+        neutered: pet.neutered,
+        special_need: pet.special_need,
+        location: pet.location.slice(:id, :lat, :lng, :address),
+        photoUrl: pet.photo.url
+    }
+    pet_info[:user] = {
+        id: pet.user.id,
+        name: pet.user.name,
+        phone: pet.user.phone,
+        email: pet.user.email,
+        location: pet.user.location.slice(:id, :lat, :lng, :address)
+    }
+
+    pet_info
+  end
+
 end

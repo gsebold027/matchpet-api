@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   resources :user, param: :_id
   resources :pet, param: :id
 
+  get '/user/:id/favorites', to: 'user#favorites'
+  post '/user/:id/favorites', to: 'user#add_favorite'
+  delete '/user/:id/favorites', to: 'user#remove_favorite'
+
   patch '/pets/:id', to: 'pet#update'
   post '/auth/login', to: 'authentication#login'
   
