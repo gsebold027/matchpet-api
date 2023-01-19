@@ -61,7 +61,11 @@ class PetController < ApplicationController
 
     # PATCH /pet/{id}
     def update
-        render json: { error: 'unauthorized' }, status: :unauthorized unless @current_user.id == @pet.user.id
+        unless @current_user.id == @pet.user.id
+            render json: { error: 'unauthorized' }, status: :unauthorized
+            return
+        end
+
         to_update_information = {}
 
         if !params[:lat].nil? && !params[:lng].nil?
