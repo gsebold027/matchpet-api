@@ -15,7 +15,7 @@ class InterestController < ApplicationController
             interests_raw = interests_raw.where(pet: @pet)
         end
 
-        unless params[:userId]
+        unless params[:userId].nil?
             begin
                 @user = User.find(params[:userId])
             rescue ActiveRecord::RecordNotFound
