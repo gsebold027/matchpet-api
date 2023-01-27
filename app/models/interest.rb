@@ -2,7 +2,7 @@ class Interest < ApplicationRecord
     belongs_to :user
     belongs_to :pet
 
-    validates :duplicated?, on: create
+    validate :duplicated?, on: create
 
     scope :filter_by_petId, ->(pet_id) { where(pet_id:) }
 
