@@ -23,6 +23,7 @@ class Pet < ApplicationRecord
     has_one_attached :photo
 
     has_many :favorite_pets, dependent: :destroy
+    has_many :interests, dependent: :destroy
 
     validates_presence_of :name, :age, :weight, :description, :neutered, :special_need, :specie, :gender, :status,
                           :location, :user, :photo

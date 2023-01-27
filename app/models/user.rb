@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :pets
 
   has_many :favorite_pets, dependent: :destroy
+  has_many :interests, dependent: :destroy
 
   has_secure_password
   validates_presence_of :name, message: 'must be provided'

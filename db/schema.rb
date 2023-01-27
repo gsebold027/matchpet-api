@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_19_165313) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_25_172422) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -56,6 +57,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_19_165313) do
     t.string "normalized_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "interests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "pet_id", null: false
+    t.integer "show_information"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pet_id"], name: "index_interests_on_pet_id"
+    t.index ["user_id"], name: "index_interests_on_user_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -122,6 +133,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_19_165313) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "favorite_pets", "pets"
   add_foreign_key "favorite_pets", "users"
+  add_foreign_key "interests", "pets"
+  add_foreign_key "interests", "users"
   add_foreign_key "pets", "genders"
   add_foreign_key "pets", "locations"
   add_foreign_key "pets", "sizes"

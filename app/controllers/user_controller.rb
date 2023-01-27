@@ -118,7 +118,7 @@ class UserController < ApplicationController
       @response = { message: 'Favorite pet removed successfully' }
       render json: @response, status: :ok
     else
-      errors = new_favorite.errors.map { |error| { "#{error.attribute}" => error.full_message } }
+      errors = favorite.errors.map { |error| { "#{error.attribute}" => error.full_message } }
 
       @response = { message: errors }
       render json: @response, status: :unprocessable_entity
