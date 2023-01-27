@@ -7,7 +7,7 @@ class InterestController < ApplicationController
         interests_raw = Interest.where(pet: @pet)
 
         users = []
-        interests_raw.users.each do |interest_raw|
+        interests_raw.each do |interest_raw|
             user = {}
             user[:id] = interest_raw.user.id
             user[:name] = interest_raw.user.name
