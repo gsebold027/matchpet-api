@@ -12,9 +12,10 @@ class InterestController < ApplicationController
             user[:id] = interest_raw.user.id
             user[:name] = interest_raw.user.name
             user[:email] = interest_raw.user.email
-            user[:phone] = user.phone
-            user[:location] = { lat: user.location.lat, lng: user.location.lng, address: user.location.address }
-            render json: user, status: :ok
+            user[:phone] = interest_raw.user.phone
+            user[:location] = { lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng, address: interest_raw.user.location.address }
+
+            users << user
         end
 
         interests = {
