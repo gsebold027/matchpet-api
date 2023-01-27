@@ -12,7 +12,11 @@ class PetController < ApplicationController
 
         if !params[:lat].blank? && !params[:lng].blank? && !params[:distance].blank?
             pets_raw = Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, params[:distance].to_i, pets_raw)
-        end    
+        end
+
+        if params[:userId].nil?
+            pets_raw = pets_raw.where.not(user: @current_user)
+        end
 
         @pets = []
         pets_raw.each do |pet|
@@ -151,7 +155,8 @@ class PetController < ApplicationController
             neutered: pet.neutered,
             special_need: pet.special_need,
             location: pet.location.slice(:id, :lat, :lng, :address),
-            photoUrl: pet.photo.url
+            photoUrl: pet.photo.url,
+            is_user_favorite: FavoritePet.find_by(user: @current_user, pet:).nil? ? 0 : 1
         }
         pet_info[:user] = {
             id: pet.user.id,

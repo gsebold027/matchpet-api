@@ -125,7 +125,8 @@ class InterestController < ApplicationController
             neutered: pet.neutered,
             special_need: pet.special_need,
             location: pet.location.slice(:id, :lat, :lng, :address),
-            photoUrl: pet.photo.url
+            photoUrl: pet.photo.url,
+            is_user_favorite: FavoritePet.find_by(user: @current_user, pet:).nil? ? 0 : 1
         }
         pet_info[:user] = {
             id: pet.user.id,
