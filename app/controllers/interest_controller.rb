@@ -94,13 +94,13 @@ class InterestController < ApplicationController
     private
 
     def find_pet
-        @pet = Pet.find(params[:id])
+        @pet = Pet.find(params[:petId])
     rescue ActiveRecord::RecordNotFound
         render json: { errors: 'Pet not found' }, status: :not_found
     end
 
     def find_user
-        @user = User.find(params[:_id])
+        @user = User.find(params[:userId])
       rescue ActiveRecord::RecordNotFound
         render json: { errors: 'User not found' }, status: :not_found
     end
