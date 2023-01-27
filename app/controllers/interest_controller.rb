@@ -14,7 +14,7 @@ class InterestController < ApplicationController
             user[:email] = interest_raw.user.email
             user[:phone] = interest_raw.user.phone
             user[:location] = { lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng, address: interest_raw.user.location.address }
-
+            user[:authorized] = interest_raw.show_information
             users << user
         end
 
