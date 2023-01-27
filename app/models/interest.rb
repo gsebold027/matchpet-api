@@ -9,7 +9,7 @@ class Interest < ApplicationRecord
     private
 
     def duplicated?
-        return record.errors.add :user, 'Duplicated interest' unless Interest.find_by(user: self.user,
+        errors.add :user, 'Duplicated interest' unless Interest.find_by(user: self.user,
                                                                                       pet: self.pet).nil?
     end
 end
