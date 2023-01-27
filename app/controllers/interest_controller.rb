@@ -5,12 +5,23 @@ class InterestController < ApplicationController
     def index
         interests_raw = Interest.all
         unless params[:petId]
-            find_pet
+            begin
+                @pet = Pet.find(params[:petId])
+            rescue ActiveRecord::RecordNotFound
+                render json: { errors: 'Pet not found' }, status: :not_found
+                return
+            end
+
             interests_raw = interests_raw.where(pet: @pet)
         end
 
         unless params[:userId]
-            find_user
+            begin
+                @user = User.find(params[:userId])
+            rescue ActiveRecord::RecordNotFound
+                render json: { errors: 'User not found' }, status: :not_found
+                return
+            end
             interests_raw = interests_raw.where(user: @user)
         end
 
@@ -21,7 +32,6 @@ class InterestController < ApplicationController
             user[:email] = interest_raw.user.email
             user[:phone] = interest_raw.user.phone
             user[:location] = { lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng, address: interest_raw.user.location.address }
-            user[:authorized] = interest_raw.show_information
             {
                 id: interest_raw.id,
                 user:,
@@ -48,7 +58,6 @@ class InterestController < ApplicationController
         user[:email] = @interest.user.email
         user[:phone] = @interest.user.phone
         user[:location] = { lat: @interest.user.location.lat, lng: @interest.user.location.lng, address: @interest.user.location.address }
-        user[:authorized] = @interest.show_information
 
         interest = {
                 id: @interest.id,
@@ -121,12 +130,14 @@ class InterestController < ApplicationController
         @pet = Pet.find(params[:petId])
     rescue ActiveRecord::RecordNotFound
         render json: { errors: 'Pet not found' }, status: :not_found
+        return
     end
 
     def find_user
         @user = User.find(params[:userId])
       rescue ActiveRecord::RecordNotFound
         render json: { errors: 'User not found' }, status: :not_found
+        return
     end
 
     def authorize_user
