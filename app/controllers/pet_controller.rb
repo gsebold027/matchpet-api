@@ -10,12 +10,12 @@ class PetController < ApplicationController
             pets_raw = pets_raw.public_send("filter_by_#{key}", value) if value.present?
         end
 
-        if !params[:lat].blank? && !params[:lng].blank? && !params[:distance].blank?
-            pets_raw = Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, params[:distance].to_i, pets_raw)
-        end
-
         if params[:userId].nil?
             pets_raw = pets_raw.where.not(user: @current_user)
+        end
+
+        if !params[:lat].blank? && !params[:lng].blank? && !params[:distance].blank?
+            pets_raw = Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, params[:distance].to_i, pets_raw)
         end
 
         @pets = []
