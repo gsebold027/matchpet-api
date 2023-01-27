@@ -4,7 +4,7 @@ class InterestController < ApplicationController
     # GET /interest
     def index
         interests_raw = Interest.all
-        unless params[:petId]
+        unless params[:petId].nil?
             begin
                 @pet = Pet.find(params[:petId])
             rescue ActiveRecord::RecordNotFound
