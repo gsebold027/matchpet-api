@@ -39,6 +39,7 @@ class InterestController < ApplicationController
             @interest = Interest.find(params[:id])
         rescue ActiveRecord::RecordNotFound
             render json: { errors: 'interest not found' }, status: :not_found
+            return
         end
 
         user = {}
