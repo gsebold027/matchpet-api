@@ -22,18 +22,18 @@ class InterestController < ApplicationController
             interested: users
         }
 
-        render json: pet, status: :ok
+        render json: interests, status: :ok
     end
 
     # GET /interest/:id
     def show
         begin
-            interest = Interest.find(params[:id])
+            @interests = Interest.find(params[:id])
         rescue ActiveRecord::RecordNotFound
             render json: { errors: 'interest not found' }, status: :not_found
         end
 
-        render json: pet, status: :ok
+        render json: @interests, status: :ok
     end
 
     # POST /interest
