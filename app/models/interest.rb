@@ -9,7 +9,7 @@ class Interest < ApplicationRecord
     belongs_to :user
     belongs_to :pet
 
-    validates_with ValidatorInterest
+    validates_with ValidatorInterest, on: create
 
     scope :filter_by_petId, ->(pet_id) { where(pet_id:) }
 end
