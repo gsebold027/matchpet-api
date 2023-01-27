@@ -3,11 +3,18 @@ class InterestController < ApplicationController
 
     # GET /interest
     def index
-        find_pet
-        interests_raw = Interest.where(pet: @pet)
+        interests_raw = Interest.all
+        unless params[:petId]
+            find_pet
+            interests_raw = interests_raw.where(pet: @pet)
+        end
 
-        users = []
-        interests_raw.each do |interest_raw|
+        unless params[:userId]
+            find_user
+            interests_raw = interests_raw.where(user: @user)
+        end
+
+        interests = interests_raw.map do |interest_raw|
             user = {}
             user[:id] = interest_raw.user.id
             user[:name] = interest_raw.user.name
@@ -15,13 +22,13 @@ class InterestController < ApplicationController
             user[:phone] = interest_raw.user.phone
             user[:location] = { lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng, address: interest_raw.user.location.address }
             user[:authorized] = interest_raw.show_information
-            users << user
+            {
+                id: interest_raw.id,
+                user:,
+                pet: get_pet_info(interest_raw.pet),
+                accepted: interest_raw.show_information
+            }
         end
-
-        interests = {
-            pet: get_pet_info(@pet),
-            interested: users
-        }
 
         render json: interests, status: :ok
     end
@@ -29,12 +36,27 @@ class InterestController < ApplicationController
     # GET /interest/:id
     def show
         begin
-            @interests = Interest.find(params[:id])
+            @interest = Interest.find(params[:id])
         rescue ActiveRecord::RecordNotFound
             render json: { errors: 'interest not found' }, status: :not_found
         end
 
-        render json: @interests, status: :ok
+        user = {}
+        user[:id] = @interest.user.id
+        user[:name] = @interest.user.name
+        user[:email] = @interest.user.email
+        user[:phone] = @interest.user.phone
+        user[:location] = { lat: @interest.user.location.lat, lng: @interest.user.location.lng, address: @interest.user.location.address }
+        user[:authorized] = @interest.show_information
+
+        interest = {
+                id: @interest.id,
+                user:,
+                pet: get_pet_info(@interest.pet),
+                accepted: @interest.show_information
+            }
+
+        render json: interest, status: :ok
     end
 
     # POST /interest
