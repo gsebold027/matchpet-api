@@ -90,7 +90,9 @@ class PetController < ApplicationController
             to_update_information[:location] = location
         end
 
-        params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered, :special_need, :photo).each do |key, value|
+        new_owner = !params[:user_id].nil? && (params[:user_id] != @pet.user.id) ? true : false
+
+        params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered, :special_need, :photo, :user_id).each do |key, value|
             case key
             when 'species'
                 to_update_information[:specie] = Specie.find_by(normalized_name: value)
@@ -106,6 +108,7 @@ class PetController < ApplicationController
         end
 
         if @pet.update(to_update_information)
+            Firebase.notification(Firebase.get_token(@pet.user.id), 'Adoção confirmada', "Parabéns, o pet #{@pet.name} agora é seu!") if new_owner
             @response = { message: 'Pet updated successfully', id: @pet.id }
             render json: @response, status: :created
         else
