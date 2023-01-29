@@ -10,12 +10,11 @@ class PetController < ApplicationController
             pets_raw = pets_raw.public_send("filter_by_#{key}", value) if value.present?
         end
 
-        if params[:userId].nil?
-            pets_raw = pets_raw.where.not(user: @current_user)
-        end
+        pets_raw = pets_raw.where.not(user: @current_user) if params[:userId].nil?
 
         if !params[:lat].blank? && !params[:lng].blank? && !params[:distance].blank?
-            pets_raw = Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng]}, params[:distance].to_i, pets_raw)
+            pets_raw = Pet.filter_by_distance({ lat: params[:lat], lng: params[:lng] }, params[:distance].to_i,
+                                              pets_raw)
         end
 
         @pets = []
@@ -92,7 +91,8 @@ class PetController < ApplicationController
 
         new_owner = !params[:user_id].nil? && (params[:user_id] != @pet.user.id) ? true : false
 
-        params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered, :special_need, :photo, :user_id).each do |key, value|
+        params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered,
+                     :special_need, :photo, :user_id).each do |key, value|
             case key
             when 'species'
                 to_update_information[:specie] = Specie.find_by(normalized_name: value)
@@ -108,7 +108,14 @@ class PetController < ApplicationController
         end
 
         if @pet.update(to_update_information)
-            Firebase.notification(Firebase.get_token(@pet.user.id), 'Adoção confirmada', "Parabéns, o pet #{@pet.name} agora é seu!") if new_owner
+            begin
+                if new_owner
+                    Firebase.notification(Firebase.get_token(@pet.user.id), 'Adoção confirmada',
+                                          "Parabéns, o pet #{@pet.name} agora é seu!")
+                end
+            rescue Exception => e
+                puts 'Não foi possivel enviar a notificação'
+            end
             @response = { message: 'Pet updated successfully', id: @pet.id }
             render json: @response, status: :created
         else

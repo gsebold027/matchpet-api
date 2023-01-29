@@ -31,7 +31,9 @@ class InterestController < ApplicationController
             user[:name] = interest_raw.user.name
             user[:email] = interest_raw.user.email
             user[:phone] = interest_raw.user.phone
-            user[:location] = { lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng, address: interest_raw.user.location.address }
+            user[:location] =
+{ lat: interest_raw.user.location.lat, lng: interest_raw.user.location.lng,
+  address: interest_raw.user.location.address }
             {
                 id: interest_raw.id,
                 user:,
@@ -57,14 +59,15 @@ class InterestController < ApplicationController
         user[:name] = @interest.user.name
         user[:email] = @interest.user.email
         user[:phone] = @interest.user.phone
-        user[:location] = { lat: @interest.user.location.lat, lng: @interest.user.location.lng, address: @interest.user.location.address }
+        user[:location] =
+{ lat: @interest.user.location.lat, lng: @interest.user.location.lng, address: @interest.user.location.address }
 
         interest = {
-                id: @interest.id,
-                user:,
-                pet: get_pet_info(@interest.pet),
-                accepted: @interest.show_information
-            }
+            id: @interest.id,
+            user:,
+            pet: get_pet_info(@interest.pet),
+            accepted: @interest.show_information
+        }
 
         render json: interest, status: :ok
     end
@@ -76,7 +79,12 @@ class InterestController < ApplicationController
         interest = Interest.new(user: @user, pet: @pet, show_information: 0)
 
         if interest.save
-            Firebase.notification(Firebase.get_token(@pet.user.id), 'Novo interessado', "O pet #{@pet.name}, tem um novo interessado!")
+            begin
+                Firebase.notification(Firebase.get_token(@pet.user.id), 'Novo interessado',
+                                      "O pet #{@pet.name}, tem um novo interessado!")
+            rescue Exception => e
+                puts 'Não foi possivel enviar a notificação'
+            end
 
             @response = { message: 'Interest sended successfully', id: interest.id }
             render json: @response, status: :created
@@ -97,7 +105,12 @@ class InterestController < ApplicationController
         end
 
         if interest.update(show_information: 1)
-            Firebase.notification(Firebase.get_token(interest.user.id), 'Interesse aceito', "O tutor do pet #{@pet.name}, aceitou seu pedido entre em contato para mais informações!")
+            begin
+                Firebase.notification(Firebase.get_token(interest.user.id), 'Interesse aceito',
+                                      "O tutor do pet #{@pet.name}, aceitou seu pedido entre em contato para mais informações!")
+            rescue Exception => e
+                puts 'Não foi possivel enviar a notificação'
+            end
             @response = { message: 'Interest updated successfully', id: interest.id }
             render json: @response, status: :created
         else
@@ -117,7 +130,12 @@ class InterestController < ApplicationController
         end
 
         if interest.destroy
-            Firebase.notification(Firebase.get_token(interest.pet.user.id), 'Interesse removido', "O interesse no pet #{@pet.name} foi cancelado")
+            begin
+                Firebase.notification(Firebase.get_token(interest.pet.user.id), 'Interesse removido',
+                                      "O interesse no pet #{@pet.name} foi cancelado")
+            rescue Exception => e
+                puts 'Não foi possivel enviar a notificação'
+            end
             @response = { message: 'Interest removed successfully' }
             render json: @response, status: :ok
         else
@@ -134,14 +152,14 @@ class InterestController < ApplicationController
         @pet = Pet.find(params[:petId])
     rescue ActiveRecord::RecordNotFound
         render json: { errors: 'Pet not found' }, status: :not_found
-        return
+        nil
     end
 
     def find_user
         @user = User.find(params[:userId])
-      rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound
         render json: { errors: 'User not found' }, status: :not_found
-        return
+        nil
     end
 
     def authorize_user
