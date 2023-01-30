@@ -117,8 +117,7 @@ class PetController < ApplicationController
         end
 
         if @pet.update(to_update_information)
-            Firebase.notification(@firebase_token, 'Adoção confirmada',
-            "Parabéns, o pet #{@pet.name} agora é seu!")
+            Firebase.notification(@firebase_token, 'Adoção confirmada', "Parabéns, o pet #{@pet.name} agora é seu!") if new_owner
             @response = { message: 'Pet updated successfully', id: @pet.id }
             render json: @response, status: :created
         else
