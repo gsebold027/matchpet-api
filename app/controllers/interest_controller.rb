@@ -112,7 +112,7 @@ class InterestController < ApplicationController
 
         if @interest.update(show_information: 1)
             Firebase.notification(@firebase_token, 'Interesse aceito',
-                                  "O tutor do pet #{@pet.name}, aceitou seu pedido entre em contato para mais informações!")
+                                  "O tutor do pet #{@interest.pet.name}, aceitou seu pedido entre em contato para mais informações!")
             @response = { message: 'Interest updated successfully', id: @interest.id }
             render json: @response, status: :created
         else
@@ -139,7 +139,7 @@ class InterestController < ApplicationController
 
         if @interest.destroy
             Firebase.notification(@firebase_token, 'Interesse removido',
-                                  "O interesse no pet #{@pet.name} foi cancelado")
+                                  "O interesse no pet #{@interest.pet.name} foi cancelado")
             @response = { message: 'Interest removed successfully' }
             render json: @response, status: :ok
         else
