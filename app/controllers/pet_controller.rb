@@ -68,6 +68,16 @@ class PetController < ApplicationController
             render json: { error: 'unauthorized' }, status: :unauthorized
             return
         end
+        new_owner = !params[:user_id].nil? && (params[:user_id] != @pet.user.id) ? true : false
+
+        begin
+            if new_owner
+                @firebase_token = Firebase.get_token(@pet.user.id)
+            end
+        rescue Exception => e
+            render json: { error: 'Not found user in firebase' }, status: :ok
+            return
+        end
 
         to_update_information = {}
 
@@ -89,7 +99,6 @@ class PetController < ApplicationController
             to_update_information[:location] = location
         end
 
-        new_owner = !params[:user_id].nil? && (params[:user_id] != @pet.user.id) ? true : false
 
         params.slice(:name, :species, :gender, :size, :status, :breed, :age, :weight, :description, :neutered,
                      :special_need, :photo, :user_id).each do |key, value|
@@ -108,14 +117,8 @@ class PetController < ApplicationController
         end
 
         if @pet.update(to_update_information)
-            begin
-                if new_owner
-                    Firebase.notification(Firebase.get_token(@pet.user.id), 'Adoção confirmada',
-                                          "Parabéns, o pet #{@pet.name} agora é seu!")
-                end
-            rescue Exception => e
-                puts 'Não foi possivel enviar a notificação'
-            end
+            Firebase.notification(@firebase_token, 'Adoção confirmada',
+            "Parabéns, o pet #{@pet.name} agora é seu!")
             @response = { message: 'Pet updated successfully', id: @pet.id }
             render json: @response, status: :created
         else
