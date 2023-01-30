@@ -75,7 +75,7 @@ class PetController < ApplicationController
                 @firebase_token = Firebase.get_token(@pet.user.id)
             end
         rescue Exception => e
-            render json: { error: 'Not found user in firebase' }, status: :ok
+            render json: { error: 'Not found user in firebase' }, status: :unauthorized
             return
         end
 
