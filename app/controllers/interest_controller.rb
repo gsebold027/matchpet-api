@@ -131,7 +131,7 @@ class InterestController < ApplicationController
             render json: { errors: 'interest not found' }, status: :not_found
         end
         begin
-            @firebase_token = Firebase.get_token(@pet.user.id)
+            @firebase_token = Firebase.get_token(@interest.user.id)
         rescue Exception => e
             render json: { error: 'Not found user in firebase' }, status: :unauthorized
             return
