@@ -72,7 +72,7 @@ class PetController < ApplicationController
 
         begin
             if new_owner
-                @firebase_token = Firebase.get_token(@pet.user.id)
+                @firebase_token = Firebase.get_token(params[:user_id])
             end
         rescue Exception => e
             render json: { error: 'Not found user in firebase' }, status: :unauthorized
